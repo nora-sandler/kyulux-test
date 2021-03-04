@@ -24,7 +24,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(reaction, calories, fat, age, countryName) {
+function createData(reaction, calories, fat, age, countryCode, countryName, countryIsOnlyReported) {
   return { reaction, calories, fat, age, countryName };
 }
 
@@ -107,17 +107,17 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
 
    // Get country
    let countryCode = ""
-   let countryOnlyReported = false;
+   let countryIsOnlyReported = false;
    if( "occurcountry" in results[iresult] ) {
      countryCode = results[iresult].occurcountry
    }
    else {
-     countryOnlyReported = true;
+     countryIsOnlyReported = true;
      countryCode = results[iresult].primarysource.reportercountry
    }
    let countryName = countryCodes[countryCode]
 
-   let curRow = createData(strSymptoms, date, drugs, age, countryName)
+   let curRow = createData(strSymptoms, date, drugs, age, countryCode, countryName, countryIsOnlyReported)
    ourRows.push(curRow)
   }
 
