@@ -113,7 +113,7 @@ function errorReport(error)
 }
 
 
-fetch('https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22headache%22&limit=50').then(response => response.json())
+fetch('https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22headache%22&limit=10').then(response => response.json())
             .then(data => { rows = parseFDAAdverseEventSearch(data)
         }).catch((error) => { errorReport(error) })
 
