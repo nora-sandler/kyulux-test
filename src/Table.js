@@ -21,9 +21,10 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import * as fda from './fda-utils.js';
 
-function createData(reaction, calories, fat, carbs, protein) {
-  return { reaction, calories, fat, carbs, protein };
+function createData(reaction, calories, fat, age, protein) {
+  return { reaction, calories, fat, age, protein };
 }
 
 let rows = [
@@ -99,7 +100,8 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
 
 
    // Get age
-   let age = "10"
+   let age = fda.getPatientAgeInYears( results[iresult].patient.patientonsetage,
+                                       results[iresult].patient.patientonsetageunit )
 
 
    // Get country
@@ -377,7 +379,7 @@ export default function EnhancedTable() {
                       </TableCell>
                       <TableCell align="right">{row.calories}</TableCell>
                       <TableCell align="right">{row.fat}</TableCell>
-                      <TableCell align="right">{row.carbs}</TableCell>
+                      <TableCell align="right">{row.age}</TableCell>
                       <TableCell align="right">{row.protein}</TableCell>
                     </TableRow>
                   );
