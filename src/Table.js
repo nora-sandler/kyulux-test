@@ -77,15 +77,20 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
 
 
     // Get reactions.
-    let symptoms = []
+    // let symptoms = []
+    let strSymptoms = ""
 
     let reactions = results[iresult].patient.reaction
-    for(let ireaction = 0; ireaction < reactions.length; ireaction++) {
-      symptoms.push(reactions[ireaction].reactionmeddrapt)
+    for(let ireaction = 0; ireaction < reactions.length-1; ireaction++) {
+      // symptoms.push(reactions[ireaction].reactionmeddrapt)
+      // console.log(symptoms[0])
+      strSymptoms += reactions[ireaction].reactionmeddrapt + ", "
+      
     }
+    strSymptoms += reactions[reactions.length-1].reactionmeddrapt
+    console.log(strSymptoms)
 
-
-   // Get date
+   // Get date 
    let date = "0"
 
 
@@ -100,7 +105,7 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
    // Get country
    let country= "USA"
 
-   let curRow = createData(symptoms, date, drugs, age, country)
+   let curRow = createData(strSymptoms, date, drugs, age, country)
    ourRows.push(curRow)
   }
 
@@ -113,7 +118,7 @@ function errorReport(error)
 }
 
 
-fetch('https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22headache%22&limit=10').then(response => response.json())
+fetch('https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22headache%22&limit=50').then(response => response.json())
             .then(data => { rows = parseFDAAdverseEventSearch(data)
         }).catch((error) => { errorReport(error) })
 
