@@ -22,6 +22,7 @@ import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import * as fda from './fda-utils.js';
+import * as iso3166 from './iso-3166-alpha-2.js';
 
 function createData(reaction, calories, fat, age, protein) {
   return { reaction, calories, fat, age, protein };
