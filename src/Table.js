@@ -22,10 +22,10 @@ import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import * as fda from './fda-utils.js';
-import * as iso3166 from './iso-3166-alpha-2.js';
+import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(reaction, calories, fat, age, protein) {
-  return { reaction, calories, fat, age, protein };
+function createData(reaction, calories, fat, age, countryName) {
+  return { reaction, calories, fat, age, countryName };
 }
 
 let rows = [
@@ -106,9 +106,18 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
 
 
    // Get country
-   let country= "USA"
+   let countryCode = ""
+   let countryOnlyReported = false;
+   if( "occurcountry" in results[iresult] ) {
+     countryCode = results[iresult].occurcountry
+   }
+   else {
+     countryOnlyReported = true;
+     countryCode = results[iresult].primarysource.reportercountry
+   }
+   let countryName = countryCodes[countryCode]
 
-   let curRow = createData(strSymptoms, date, drugs, age, country)
+   let curRow = createData(strSymptoms, date, drugs, age, countryName)
    ourRows.push(curRow)
   }
 
@@ -130,7 +139,7 @@ const headCells = [
   { id: 'date', numeric: false, disablePadding: false, label: 'Date' }, // receiptdate
   { id: 'drugs', numeric: false, disablePadding: false, label: 'Drugs' }, // drug[].openfda.generic_name[]
   { id: 'age', numeric: true, disablePadding: false, label: 'Age' }, // patientonsetage
-  { id: 'country', numeric: false, disablePadding: false, label: 'Country of Occurence' }, // occurcountry
+  { id: 'countryName', numeric: false, disablePadding: false, label: 'Country of Occurence' }, // occurcountry
 ];
 
 function EnhancedTableHead(props) {
@@ -381,7 +390,7 @@ export default function EnhancedTable() {
                       <TableCell align="right">{row.calories}</TableCell>
                       <TableCell align="right">{row.fat}</TableCell>
                       <TableCell align="right">{row.age}</TableCell>
-                      <TableCell align="right">{row.protein}</TableCell>
+                      <TableCell align="left">{row.countryName}</TableCell>
                     </TableRow>
                   );
                 })}
