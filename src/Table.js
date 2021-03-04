@@ -25,7 +25,7 @@ import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
 function createData(reaction, calories, fat, age, countryCode, countryName, countryIsOnlyReported) {
-  return { reaction, calories, fat, age, countryName };
+  return { reaction, calories, fat, age, countryName, country: {countryCode, countryIsOnlyReported } };
 }
 
 let rows = [
