@@ -24,8 +24,8 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(reaction, calories, fat, age, countryCode, countryName, countryIsOnlyReported) {
-  return { reaction, calories, fat, age, countryName, country: {countryCode, countryIsOnlyReported } };
+function createData(reaction, date, fat, age, countryCode, countryName, countryIsOnlyReported) {
+  return { reaction, date, fat, age, countryName, country: {countryCode, countryIsOnlyReported } };
 }
 
 let rows = [
@@ -93,7 +93,10 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
     console.log(strSymptoms)
 
    // Get date 
-   let date = "0"
+   let dateAsRead = results[iresult].receiptdate
+   let dateStr = dateAsRead.substr(0,4) + '/' + dateAsRead.substr(4,2) + '/' + dateAsRead.substr(6,2)
+   let date = new Date(0)
+   date.setUTCSeconds(Date.parse( dateStr ) / 1000)
 
 
    // Get drugs
@@ -387,10 +390,10 @@ export default function EnhancedTable() {
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {row.reaction}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
+                      <TableCell align="right">{row.date.toLocaleDateString()}</TableCell>
                       <TableCell align="right">{row.fat}</TableCell>
                       <TableCell align="right">{row.age}</TableCell>
-                      <TableCell align="left">{row.countryName}</TableCell>
+                      <TableCell align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
                     </TableRow>
                   );
                 })}
