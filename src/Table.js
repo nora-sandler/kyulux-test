@@ -421,7 +421,7 @@ export default function EnhancedTable() {
                         {row.reaction}
                       </TableCell>
                       <TableCell align="right">{row.date.toLocaleDateString()}</TableCell>
-                      <TableCell align="right">{row.drugs}</TableCell>
+                      <TableCell style={rowStyleDrugs} align="right">{row.drugs}</TableCell>
                       <TableCell align="right">{row.age}</TableCell>
                       <TableCell align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
                     </TableRow>
