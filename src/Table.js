@@ -72,15 +72,11 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-let searchTerm = ""
 
 function changeSearchTerm(newSearchTerm) {
-  searchTerm = newSearchTerm
+  //searchTerm = newSearchTerm
 }
 
-function fetchData() {
-  alert("hi")
-}
 
 function parseFDAAdverseEventSearch(adverseEventsResponse) {
   let ourRows = []
@@ -162,9 +158,6 @@ function errorReport(error)
 }
 
 
-fetch('https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22headache%22&limit=50').then(response => response.json())
-            .then(data => { rows = parseFDAAdverseEventSearch(data)
-        }).catch((error) => { errorReport(error) })
 
 const headCells = [
   { id: 'reaction', disablePadding: true, label: 'Reactions' }, // patient.reaction.reactionmeddrapt
@@ -243,6 +236,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const EnhancedTableToolbar = (props) => {
+  const [searchTerm, setSearchTerm] = React.useState('');
   const classes = useToolbarStyles();
   const { numSelected } = props;
 
@@ -251,6 +245,12 @@ const EnhancedTableToolbar = (props) => {
   }
   const searchInputStyle = {
     width: "70%",
+  }
+
+  const fetchData = () => {
+    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${searchTerm}%22&limit=1000`).then(response => response.json())
+              .then(data => { rows = parseFDAAdverseEventSearch(data)
+          }).catch((error) => { errorReport(error) })
   }
 
   return (
@@ -271,7 +271,7 @@ const EnhancedTableToolbar = (props) => {
             name="searchTerm"
             placeholder="Enter Adverse Reaction"
             onChange={(e) =>
-              changeSearchTerm(e.target.value)
+              setSearchTerm(e.target.value)
             }
             required
           />
