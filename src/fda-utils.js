@@ -26,5 +26,5 @@ export function getPatientAgeInYears(patientonsetage, patientonsetageunit) {
     // TODO: throw error
   }
 
-  return patientonsetage * multiplier / (24*7*52);
+  return patientonsetage !== undefined ? (patientonsetage * multiplier / (24*7*52)).toString() : "Unknown";
 }
