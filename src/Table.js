@@ -26,8 +26,8 @@ import * as utils from './utils.js';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported) {
-  return { reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported } };
+function createData(indexid, reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported) {
+  return { indexid, reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported } };
 }
 
 let rows = [
@@ -73,8 +73,6 @@ function stableSort(array, comparator) {
 }
 
 function parseFDAAdverseEventSearch(adverseEventsResponse) {
-  console.log("parseFDAAdverseEventSearch")
-  console.log(adverseEventsResponse)
   let ourRows = []
   let results = adverseEventsResponse.results
   for(let iresult = 0; iresult < results.length; iresult++) {
@@ -87,64 +85,62 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
     let reactions = results[iresult].patient.reaction
     for(let ireaction = 0; ireaction < reactions.length-1; ireaction++) {
       // symptoms.push(reactions[ireaction].reactionmeddrapt)
-      // console.log(symptoms[0])
       strSymptoms += reactions[ireaction].reactionmeddrapt + ", "
       
     }
     strSymptoms += reactions[reactions.length-1].reactionmeddrapt
-    console.log(strSymptoms)
 
-   // Get date 
-   let dateAsRead = results[iresult].receiptdate
-   let dateStr = dateAsRead.substr(0,4) + '/' + dateAsRead.substr(4,2) + '/' + dateAsRead.substr(6,2)
-   let date = new Date(0)
-   date.setUTCSeconds(Date.parse( dateStr ) / 1000)
+    // Get date 
+    let dateAsRead = results[iresult].receiptdate
+    let dateStr = dateAsRead.substr(0,4) + '/' + dateAsRead.substr(4,2) + '/' + dateAsRead.substr(6,2)
+    let date = new Date(0)
+    date.setUTCSeconds(Date.parse( dateStr ) / 1000)
 
 
-   // Get drugs
+    // Get drugs
 
-   let drugs = results[iresult].patient.drug
-   let drugsSorted = [] 
+    let drugs = results[iresult].patient.drug
+    let drugsSorted = [] 
 
-   for(let idrugs = 0; idrugs < drugs.length; idrugs++) {
+    for(let idrugs = 0; idrugs < drugs.length; idrugs++) {
 
-     let strCurDrug = drugs[idrugs].medicinalproduct
+      let strCurDrug = drugs[idrugs].medicinalproduct
 
-     let strCurDrugLowered = strCurDrug[0]
-     for(let iCurDrug = 1; iCurDrug < strCurDrug.length; iCurDrug++)
-     {
-       strCurDrugLowered += strCurDrug[iCurDrug].toLowerCase() 
-     }
+      let strCurDrugLowered = strCurDrug[0]
+      for(let iCurDrug = 1; iCurDrug < strCurDrug.length; iCurDrug++)
+      {
+        strCurDrugLowered += strCurDrug[iCurDrug].toLowerCase() 
+      }
      
-     drugsSorted.push(strCurDrugLowered)
-   }
+      drugsSorted.push(strCurDrugLowered)
+    }
 
-   drugsSorted = utils.sort_unique(drugsSorted)
+    drugsSorted = utils.sort_unique(drugsSorted)
 
-   let strDrugs = ""
-   for(let idrugs = 0; idrugs < drugsSorted.length; idrugs++) {
-     strDrugs += drugsSorted[idrugs] + (idrugs < drugsSorted.length - 1 ? ", " : "")
-   }
+    let strDrugs = ""
+    for(let idrugs = 0; idrugs < drugsSorted.length; idrugs++) {
+      strDrugs += drugsSorted[idrugs] + (idrugs < drugsSorted.length - 1 ? ", " : "")
+    }
 
-   // Get age
-   let age = fda.getPatientAgeInYears( results[iresult].patient.patientonsetage,
+    // Get age
+    let age = fda.getPatientAgeInYears( results[iresult].patient.patientonsetage,
                                        results[iresult].patient.patientonsetageunit )
 
 
-   // Get country
-   let countryCode = ""
-   let countryIsOnlyReported = false;
-   if( "occurcountry" in results[iresult] ) {
-     countryCode = results[iresult].occurcountry
-   }
-   else {
-     countryIsOnlyReported = true;
-     countryCode = results[iresult].primarysource.reportercountry
-   }
-   let countryName = countryCodes[countryCode]
-
-   let curRow = createData(strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported)
-   ourRows.push(curRow)
+    // Get country
+    let countryCode = ""
+    let countryIsOnlyReported = false;
+    if( "occurcountry" in results[iresult] ) {
+      countryCode = results[iresult].occurcountry
+    }
+    else {
+      countryIsOnlyReported = true;
+      countryCode = results[iresult].primarysource.reportercountry
+    }
+    let countryName = countryCodes[countryCode]
+ 
+    let curRow = createData(ourRows.length, strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported)
+    ourRows.push(curRow)
   }
 
   return ourRows
@@ -394,6 +390,8 @@ export default function EnhancedTable() {
                   const isItemSelected = isSelected(row.reaction);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
+                  console.log(`We are on page ${page}: row ${index} Hee Hee`)
+ 
                   const rowStyleReactions = {
                     width: "45%"
                   }
@@ -418,7 +416,7 @@ export default function EnhancedTable() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.reaction}
+                      key={row.indexid}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
