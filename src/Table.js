@@ -161,11 +161,11 @@ fetch('https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddr
         }).catch((error) => { errorReport(error) })
 
 const headCells = [
-  { id: 'reaction', numeric: false, disablePadding: true, label: 'Reactions' }, // patient.reaction.reactionmeddrapt
-  { id: 'date', numeric: false, disablePadding: false, label: 'Date' }, // receiptdate
-  { id: 'drugs', numeric: false, disablePadding: false, label: 'Drugs' }, // drug[].openfda.generic_name[]
-  { id: 'age', numeric: true, disablePadding: false, label: 'Age' }, // patientonsetage
-  { id: 'countryName', numeric: false, disablePadding: false, label: 'Country of Occurence' }, // occurcountry
+  { id: 'reaction', disablePadding: true, label: 'Reactions' }, // patient.reaction.reactionmeddrapt
+  { id: 'date', disablePadding: false, label: 'Date' }, // receiptdate
+  { id: 'drugs', disablePadding: false, label: 'Drugs' }, // drug[].openfda.generic_name[]
+  { id: 'age', disablePadding: false, label: 'Age' }, // patientonsetage
+  { id: 'countryName', disablePadding: false, label: 'Country of Occurence' }, // occurcountry
 ];
 
 function EnhancedTableHead(props) {
@@ -188,7 +188,7 @@ function EnhancedTableHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align={'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -395,11 +395,21 @@ export default function EnhancedTable() {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   const rowStyleReactions = {
-                    width: "25%"
+                    width: "45%"
                   }
                   const rowStyleDrugs = {
-                    width: "25%"
+                    width: "35%"
                   }
+                  const rowStyleAge = {
+                    width: "5%"
+                  }
+                  const rowStyleDate = {
+                    width: "5%"
+                  }
+                  const rowStyleCountry = {
+                    width: "10%"
+                  }
+
 
                   return (
                     <TableRow
@@ -420,10 +430,10 @@ export default function EnhancedTable() {
                       <TableCell style={rowStyleReactions} component="th" id={labelId} scope="row" padding="none">
                         {row.reaction}
                       </TableCell>
-                      <TableCell align="right">{row.date.toLocaleDateString()}</TableCell>
-                      <TableCell style={rowStyleDrugs} align="right">{row.drugs}</TableCell>
-                      <TableCell align="right">{row.age}</TableCell>
-                      <TableCell align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
+                      <TableCell style={rowStyleDate} align="left">{row.date.toLocaleDateString()}</TableCell>
+                      <TableCell style={rowStyleDrugs} align="left">{row.drugs}</TableCell>
+                      <TableCell style={rowStyleAge} align="left">{row.age}</TableCell>
+                      <TableCell style={rowStyleCountry} align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
                     </TableRow>
                   );
                 })}
