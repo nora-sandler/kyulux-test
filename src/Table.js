@@ -132,7 +132,7 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
    }
    let countryName = countryCodes[countryCode]
 
-   let curRow = createData(strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported)
+   let curRow = createData(strSymptoms, date, "asd", age, countryCode, countryName, countryIsOnlyReported)
    ourRows.push(curRow)
   }
 
