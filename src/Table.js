@@ -72,6 +72,16 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+let searchTerm = ""
+
+function changeSearchTerm(newSearchTerm) {
+  searchTerm = newSearchTerm
+}
+
+function fetchData() {
+  alert("hi")
+}
+
 function parseFDAAdverseEventSearch(adverseEventsResponse) {
   let ourRows = []
   let results = adverseEventsResponse.results
@@ -241,35 +251,37 @@ const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
 
+  const searchLabelStyle = {
+    width: "7%",
+  }
+  const searchInputStyle = {
+    width: "70%",
+  }
+
   return (
     <Toolbar
-      className={clsx(classes.root, {
-        [classes.highlight]: numSelected > 0,
-      })}
+      className={clsx(classes.root)}
     >
-      {numSelected > 0 ? (
-        <Typography className={classes.title} color="inherit" variant="subtitle1" component="div">
-          {numSelected} selected
-        </Typography>
-      ) : (
+      {
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
           Adverse Events
         </Typography>
-      )}
+      }
 
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+        <form onSubmit={(e) => {e.preventDefault(); fetchData()} } >
+          Search: <input
+            type="text"
+            style={searchInputStyle}
+            id="searchTerm"
+            name="searchTerm"
+            placeholder="Enter Adverse Reaction"
+            onChange={(e) =>
+              changeSearchTerm(e.target.value)
+            }
+            required
+          />
+        </form>
+
     </Toolbar>
   );
 };
