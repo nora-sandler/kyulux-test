@@ -371,6 +371,10 @@ export default function EnhancedTable() {
                   const isItemSelected = isSelected(row.reaction);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
+                  const rowStyleReactions = {
+                    width: "25%"
+                  }
+
                   return (
                     <TableRow
                       hover
@@ -387,7 +391,7 @@ export default function EnhancedTable() {
                           inputProps={{ 'aria-labelledby': labelId }}
                         />
                       </TableCell>
-                      <TableCell component="th" id={labelId} scope="row" padding="none">
+                      <TableCell style={rowStyleReactions} component="th" id={labelId} scope="row" padding="none">
                         {row.reaction}
                       </TableCell>
                       <TableCell align="right">{row.date.toLocaleDateString()}</TableCell>
