@@ -24,8 +24,8 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(reaction, date, fat, age, countryCode, countryName, countryIsOnlyReported) {
-  return { reaction, date, fat, age, countryName, country: {countryCode, countryIsOnlyReported } };
+function createData(reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported) {
+  return { reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported } };
 }
 
 let rows = [
@@ -100,7 +100,19 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
 
 
    // Get drugs
-   let drugs = "None"
+   let strDrugs = ""
+
+   let drugs = results[iresult].drugs
+   for(let idrugs = 0; idrugs < drugs.length; idrugs++) {
+     // symptoms.push(reactions[ireaction].reactionmeddrapt)
+     // console.log(symptoms[0])
+     let strCurDrug = drugs.medicinalproduct
+     for(let iCurDrug = 1; iCurDrug < strCurDrug.length; iCurDrug++)
+     {
+       strCurDrug[iCurDrug].toLowerCase() 
+     }
+     strDrugs += strCurDrug + (idrugs < drugs.length - 1 ? ", " : "")
+   }
 
 
    // Get age
@@ -120,7 +132,7 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
    }
    let countryName = countryCodes[countryCode]
 
-   let curRow = createData(strSymptoms, date, drugs, age, countryCode, countryName, countryIsOnlyReported)
+   let curRow = createData(strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported)
    ourRows.push(curRow)
   }
 
@@ -374,6 +386,9 @@ export default function EnhancedTable() {
                   const rowStyleReactions = {
                     width: "25%"
                   }
+                  const rowStyleDrugs = {
+                    width: "25%"
+                  }
 
                   return (
                     <TableRow
@@ -395,7 +410,7 @@ export default function EnhancedTable() {
                         {row.reaction}
                       </TableCell>
                       <TableCell align="right">{row.date.toLocaleDateString()}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
+                      <TableCell align="right">{row.drugs}</TableCell>
                       <TableCell align="right">{row.age}</TableCell>
                       <TableCell align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
                     </TableRow>
