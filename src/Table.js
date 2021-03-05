@@ -21,6 +21,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+
+import * as utils from './utils.js';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
@@ -100,20 +102,29 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
 
 
    // Get drugs
-   let strDrugs = ""
 
-   let drugs = results[iresult].drugs
+   let drugs = results[iresult].patient.drug
+   let drugsSorted = [] 
+
    for(let idrugs = 0; idrugs < drugs.length; idrugs++) {
-     // symptoms.push(reactions[ireaction].reactionmeddrapt)
-     // console.log(symptoms[0])
-     let strCurDrug = drugs.medicinalproduct
+
+     let strCurDrug = drugs[idrugs].medicinalproduct
+
+     let strCurDrugLowered = strCurDrug[0]
      for(let iCurDrug = 1; iCurDrug < strCurDrug.length; iCurDrug++)
      {
-       strCurDrug[iCurDrug].toLowerCase() 
+       strCurDrugLowered += strCurDrug[iCurDrug].toLowerCase() 
      }
-     strDrugs += strCurDrug + (idrugs < drugs.length - 1 ? ", " : "")
+     
+     drugsSorted.push(strCurDrugLowered)
    }
 
+   drugsSorted = utils.sort_unique(drugsSorted)
+
+   let strDrugs = ""
+   for(let idrugs = 0; idrugs < drugsSorted.length; idrugs++) {
+     strDrugs += drugsSorted[idrugs] + (idrugs < drugsSorted.length - 1 ? ", " : "")
+   }
 
    // Get age
    let age = fda.getPatientAgeInYears( results[iresult].patient.patientonsetage,
@@ -132,7 +143,7 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
    }
    let countryName = countryCodes[countryCode]
 
-   let curRow = createData(strSymptoms, date, "asd", age, countryCode, countryName, countryIsOnlyReported)
+   let curRow = createData(strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported)
    ourRows.push(curRow)
   }
 
