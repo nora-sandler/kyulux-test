@@ -30,22 +30,6 @@ function createData(indexid, reaction, date, drugs, age, countryCode, countryNam
   return { indexid, reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported } };
 }
 
-let rows = [
-  // createData('Cupcake', 305, 3.7, 67, 4.3),
-  // createData('Donut', 452, 25.0, 51, 4.9),
-  // createData('Eclair', 262, 16.0, 24, 6.0),
-  // createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  // createData('Gingerbread', 356, 16.0, 49, 3.9),
-  // createData('Honeycomb', 408, 3.2, 87, 6.5),
-  // createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  // createData('Jelly Bean', 375, 0.0, 94, 0.0),
-  // createData('KitKat', 518, 26.0, 65, 7.0),
-  // createData('Lollipop', 392, 0.2, 98, 0.0),
-  // createData('Marshmallow', 318, 0, 81, 2.0),
-  // createData('Nougat', 360, 19.0, 9, 37.0),
-  // createData('Oreo', 437, 18.0, 63, 4.0),
-];
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -236,9 +220,9 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 const EnhancedTableToolbar = (props) => {
-  const [searchTerm, setSearchTerm] = React.useState('');
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const { numSelected, onSearch, onChangeSearchTerm } = props;
+  let searchTermLocal = ""
 
   const searchLabelStyle = {
     width: "7%",
@@ -247,11 +231,6 @@ const EnhancedTableToolbar = (props) => {
     width: "70%",
   }
 
-  const fetchData = () => {
-    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${searchTerm}%22&limit=1000`).then(response => response.json())
-              .then(data => { rows = parseFDAAdverseEventSearch(data)
-          }).catch((error) => { errorReport(error) })
-  }
 
   return (
     <Toolbar
@@ -263,16 +242,17 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       }
 
-        <form onSubmit={(e) => {e.preventDefault(); fetchData()} } >
+        <form onSubmit={(e) => {e.preventDefault(); onSearch(e, searchTermLocal)} } >
           Search: <input
             type="text"
             style={searchInputStyle}
             id="searchTerm"
             name="searchTerm"
             placeholder="Enter Adverse Reaction"
-            onChange={(e) =>
-              setSearchTerm(e.target.value)
-            }
+            onChange={(e) => {
+              onChangeSearchTerm(e.target.value);
+              searchTermLocal = e.target.value
+            }}
             required
           />
         </form>
@@ -311,12 +291,25 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable() {
   const classes = useStyles();
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [rows, setRows] = React.useState([]);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleFetchData = (event, enteredSearchTerm) => {
+    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=1000`).then(response => response.json())
+            .then(data => {
+              setSearchTerm(enteredSearchTerm);
+              setRows(parseFDAAdverseEventSearch(data));
+            }).catch((error) => { errorReport(error) })
+  }
+  const handleChangeSearchTerm = (event, enteredSearchTerm) => {
+              setSearchTerm(enteredSearchTerm);
+            }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -373,7 +366,11 @@ export default function EnhancedTable() {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          onSearch={handleFetchData}
+          onChangeSearchTerm={handleChangeSearchTerm}
+        />
         <TableContainer>
           <Table
             className={classes.table}
