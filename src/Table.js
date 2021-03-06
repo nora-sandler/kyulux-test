@@ -275,6 +275,7 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     minWidth: 750,
+    display: 'none',
   },
   visuallyHidden: {
     border: 0,
@@ -358,6 +359,10 @@ export default function EnhancedTable() {
   const handleChangeDense = (event) => {
     setDense(event.target.checked);
   };
+
+  const paginationStyle = {
+    display: "none"
+  }
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -446,6 +451,7 @@ export default function EnhancedTable() {
         </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
+          style={paginationStyle}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
