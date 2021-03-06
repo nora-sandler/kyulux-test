@@ -221,7 +221,7 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected, onSearch, onChangeSearchTerm } = props;
+  const { numSelected, onSearch, onChangeSearchTerm, getVisibility } = props;
   let searchTermLocal = ""
 
   const searchLabelStyle = {
@@ -275,7 +275,7 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     minWidth: 750,
-    display: 'none',
+    display: getVisibility(),
   },
   visuallyHidden: {
     border: 0,
@@ -299,6 +299,7 @@ export default function EnhancedTable() {
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleFetchData = (event, enteredSearchTerm) => {
@@ -306,7 +307,8 @@ export default function EnhancedTable() {
             .then(data => {
               setSearchTerm(enteredSearchTerm);
               setRows(parseFDAAdverseEventSearch(data));
-            }).catch((error) => { errorReport(error) })
+            }).catch((error) => { errorReport(error) });
+    setIsVisible(true);
   }
   const handleChangeSearchTerm = (event, enteredSearchTerm) => {
               setSearchTerm(enteredSearchTerm);
@@ -360,6 +362,10 @@ export default function EnhancedTable() {
     setDense(event.target.checked);
   };
 
+  const handleGetVisibility = (event) => {
+    return isVisible;
+  };
+
   const paginationStyle = {
     display: "none"
   }
@@ -375,6 +381,7 @@ export default function EnhancedTable() {
           numSelected={selected.length}
           onSearch={handleFetchData}
           onChangeSearchTerm={handleChangeSearchTerm}
+          getVisibility={handleGetVisibility}
         />
         <TableContainer>
           <Table
