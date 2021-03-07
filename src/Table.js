@@ -12,7 +12,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -208,10 +207,6 @@ const useToolbarStyles = makeStyles((theme) => ({
           color: theme.palette.text.primary,
           backgroundColor: theme.palette.secondary.dark,
         },
-  title: {
-    flex: '1 1 100%',
-    display: "none",
-  },
 }));
 
 const EnhancedTableToolbar = (props) => {
@@ -232,12 +227,6 @@ const EnhancedTableToolbar = (props) => {
     <Toolbar
       className={clsx(classes.root)}
     >
-      {
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Adverse Events
-        </Typography>
-      }
-
         <form style={formInputStyle} onSubmit={(e) => {e.preventDefault(); onSearch(e, document.getElementById("searchTerm").value)} } >
           Search: <input
             type="text"
@@ -441,10 +430,6 @@ export default function EnhancedTable() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </div>
   );
 }
