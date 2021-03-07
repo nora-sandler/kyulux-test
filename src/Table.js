@@ -14,13 +14,8 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 import * as utils from './utils.js';
@@ -55,11 +50,6 @@ function stableSort(array, comparator) {
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
-}
-
-
-function changeSearchTerm(newSearchTerm) {
-  //searchTerm = newSearchTerm
 }
 
 
@@ -158,7 +148,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -197,9 +187,7 @@ function EnhancedTableHead(props) {
 
 EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired,
@@ -227,11 +215,8 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected, onSearch, onChangeSearchTerm, getVisibility } = props;
+  const { onSearch } = props;
 
-  const searchLabelStyle = {
-    width: "7%",
-  }
   const searchInputStyle = {
     width: "70%",
   }
@@ -262,10 +247,6 @@ const EnhancedTableToolbar = (props) => {
   );
 };
 
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
-};
-
 const getUseStyles = (onGetVisibility) => { return makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -292,7 +273,6 @@ const getUseStyles = (onGetVisibility) => { return makeStyles((theme) => ({
 }));}
 
 export default function EnhancedTable() {
-  const [searchTerm, setSearchTerm] = React.useState('');
   const [rows, setRows] = useStateWithCallbackLazy([]);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
@@ -308,28 +288,15 @@ export default function EnhancedTable() {
   const handleFetchData = (event, enteredSearchTerm) => {
     fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=10`).then(response => response.json())
             .then(data => {
-              setSearchTerm(enteredSearchTerm);
               setRows( rows2 = parseFDAAdverseEventSearch(data), () => {setIsVisible(rows2.length > 0 ? true : false);} );
               
             }).catch((error) => { errorReport(error) });
   }
-  const handleChangeSearchTerm = (event, enteredSearchTerm) => {
-              setSearchTerm(enteredSearchTerm);
-            }
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
   };
 
   const handleClick = (event, name) => {
@@ -384,10 +351,7 @@ export default function EnhancedTable() {
     <div className={classes.root}>
       <Paper className={classes.paper}>
         <EnhancedTableToolbar
-          numSelected={selected.length}
           onSearch={handleFetchData}
-          onChangeSearchTerm={handleChangeSearchTerm}
-          getVisibility={handleGetVisibility}
         />
         <TableContainer>
           <Table
@@ -398,10 +362,8 @@ export default function EnhancedTable() {
           >
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />

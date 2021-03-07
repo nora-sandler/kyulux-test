@@ -3,11 +3,9 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 
 import './App.css';
-import logo from './logo.svg';
 import Table from './Table.js';
 
 
