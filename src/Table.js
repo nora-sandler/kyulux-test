@@ -265,7 +265,7 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-const useStyles = makeStyles((theme) => ({
+const getUseStyles = (onGetVisibility) => { return makeStyles((theme) => ({
   root: {
     width: '100%',
   },
@@ -275,7 +275,7 @@ const useStyles = makeStyles((theme) => ({
   },
   table: {
     minWidth: 750,
-    display: getVisibility(),
+    display: onGetVisibility(),
   },
   visuallyHidden: {
     border: 0,
@@ -288,10 +288,9 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
-}));
+}));}
 
 export default function EnhancedTable() {
-  const classes = useStyles();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [rows, setRows] = React.useState([]);
   const [order, setOrder] = React.useState('asc');
@@ -369,6 +368,9 @@ export default function EnhancedTable() {
   const paginationStyle = {
     display: "none"
   }
+
+
+  const classes = getUseStyles(handleGetVisibility)();
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
