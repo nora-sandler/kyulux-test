@@ -25,7 +25,7 @@ The API endpoint used here outputs quite a lot of information. This information 
 ### Technical Details
 * React (hook-based) was used.
   * Material-UI tables were used. They're MIT licensed so it's fine.
-  * Installation instructions:
+  * **Installation instructions**:
     * Need to have node.js installed in your environment (known to work with 13.12).
     * Run the following commands:
       ```
@@ -33,4 +33,4 @@ The API endpoint used here outputs quite a lot of information. This information 
       npm install
       npm start
       ```
-    * In a browser, type localhost:3000/Table in the address bar.
+    * In a browser, type *localhost:3000/Table* in the address bar.
