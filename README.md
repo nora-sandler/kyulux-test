@@ -25,4 +25,9 @@ The API endpoint used here outputs quite a lot of information. This information 
 * React (hook-based) was used.
  * Material-UI tables were used. They're MIT licensed so it's fine.
  * Installation instructions:
-
+   ```
+    git clone https://github.com/nora-sandler/kyulux-test && cd kyulux-test
+    npm install
+    npm start
+   ```
+   In a browser, type localhost:3000 in the address bar.
