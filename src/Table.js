@@ -13,8 +13,6 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 import * as utils from './utils.js';
@@ -252,7 +250,7 @@ const getUseStyles = (onGetVisibility) => { return makeStyles((theme) => ({
   },
   table: {
     minWidth: 750,
-    display: onGetVisibility(),
+    display: onGetVisibility() ? "block" : "none",
   },
   visuallyHidden: {
     border: 0,
@@ -273,7 +271,6 @@ export default function EnhancedTable() {
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [isVisible, setIsVisible] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -323,16 +320,12 @@ export default function EnhancedTable() {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const handleGetVisibility = (event) => {
-    return isVisible ? "block" : "none";
+    return isVisible;
   };
 
   const paginationStyle = {
-    display: handleGetVisibility()
+    display: handleGetVisibility() ? "block" : "none",
   }
 
 
@@ -352,7 +345,7 @@ export default function EnhancedTable() {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
             aria-label="enhanced table"
           >
             <EnhancedTableHead
@@ -412,7 +405,7 @@ export default function EnhancedTable() {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
