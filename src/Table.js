@@ -210,6 +210,7 @@ const useToolbarStyles = makeStyles((theme) => ({
         },
   title: {
     flex: '1 1 100%',
+    display: "none",
   },
 }));
 
@@ -218,7 +219,12 @@ const EnhancedTableToolbar = (props) => {
   const { onSearch } = props;
 
   const searchInputStyle = {
-    width: "70%",
+    margin: "auto",
+    width: "100%",
+  }
+  const formInputStyle = {
+    margin: "auto",
+    width: "58%",
   }
 
 
@@ -232,7 +238,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       }
 
-        <form onSubmit={(e) => {e.preventDefault(); onSearch(e, document.getElementById("searchTerm").value)} } >
+        <form style={formInputStyle} onSubmit={(e) => {e.preventDefault(); onSearch(e, document.getElementById("searchTerm").value)} } >
           Search: <input
             type="text"
             style={searchInputStyle}
