@@ -1,70 +1,28 @@
-# Getting Started with Create React App
+### Objective
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Create a concise table of FDA reports of adverse events upon drug consumption searched by reaction type.
 
-## Available Scripts
+### Approach
 
-In the project directory, you can run:
+The API endpoint used here outputs quite a lot of information. This information needs to be carefully parsed to show only the most interesting parts.
+* Only a select few fields have been chosen to serve as columns: Reaction, Date, Drugs, Age, and Country of Occurence.
+* To properly interpret the response data, the FDA provides a specification [found here](https://www.fda.gov/media/111763/download).
+* Each report can have multiple *Reactions* and *Drugs* so those needed be written out as a comma separated list.
+* The width of the columns needed to be adjusted to prevent the table from being totally unreadable in cases where *Reactions* and *Drugs* produce long results.
+* The *Country* column reflects the country that reported the event because the country of occurence isn't always available. Such cases have the country name followed by (reported by).
 
-### `npm start`
+#### Current Limitations
+* The search method is limited to searching by reactions only.
+* The search is limited to 10 results
+** The best way to improve this is to make several API calls:
+** 1. first call an endpoint that returns the number of hits for a query. Use this information to fill the pagination data (despite not having all the table data yet).
+** 2. Make a query to get the first couple pages or so of the table.
+** 3. Make a query to get the rest of the table silently in the background. 
+* The columns for *Drugs* and *Reactions* often produce ugly long lists.
+** This is best solved by only listing one reaction (the one that was searched) and making the row expandable to reveal a sub-table that shows the drugs as well as information on the dosage and perscription period (not currently shown) and the a list of the other reactions.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Technical Details
+* React (hook-based) was used.
+** Material-UI tables were used. They're MIT licensed so it's fine.
+** Installation instructions:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
