@@ -24,7 +24,7 @@ The API endpoint used here outputs quite a lot of information. This information 
 
 ### Technical Details
 * React (hook-based) was used.
-  * Material-UI tables were used. They're MIT licensed so it's fine.
+  * Material-UI tables were used. It's MIT licensed so it's fine.
   * **Installation instructions**:
     * Need to have node.js installed in your environment (known to work with 13.12).
     * Run the following commands:
