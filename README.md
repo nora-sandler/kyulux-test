@@ -6,6 +6,7 @@ Create a concise table of FDA reports of adverse events upon drug consumption se
 
 The API endpoint used here outputs quite a lot of information. This information needs to be carefully parsed to show only the most interesting parts.
 * Only a select few fields have been chosen to serve as columns: Reaction, Date, Drugs, Age, and Country of Occurence.
+* The table can be sorted by any of the columns.
 * To properly interpret the response data, the FDA provides a specification [found here](https://www.fda.gov/media/111763/download).
 * Each report can have multiple *Reactions* and *Drugs* so those needed be written out as a comma separated list.
 * The width of the columns needed to be adjusted to prevent the table from being totally unreadable in cases where *Reactions* and *Drugs* produce long results.
@@ -25,9 +26,10 @@ The API endpoint used here outputs quite a lot of information. This information 
 * React (hook-based) was used.
  * Material-UI tables were used. They're MIT licensed so it's fine.
  * Installation instructions:
+   Need to have node.js installed in your environment (known to work with 13.12).
    ```
     git clone https://github.com/nora-sandler/kyulux-test && cd kyulux-test
     npm install
     npm start
    ```
-   In a browser, type localhost:3000 in the address bar.
+   In a browser, type localhost:3000/Table in the address bar.
