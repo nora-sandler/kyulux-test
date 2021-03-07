@@ -302,12 +302,12 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleFetchData = (event, enteredSearchTerm) => {
-    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=1000`).then(response => response.json())
+    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=10`).then(response => response.json())
             .then(data => {
               setSearchTerm(enteredSearchTerm);
               setRows(parseFDAAdverseEventSearch(data));
+              setIsVisible(true);
             }).catch((error) => { errorReport(error) });
-    setIsVisible(true);
   }
   const handleChangeSearchTerm = (event, enteredSearchTerm) => {
               setSearchTerm(enteredSearchTerm);
@@ -362,11 +362,11 @@ export default function EnhancedTable() {
   };
 
   const handleGetVisibility = (event) => {
-    return isVisible;
+    return isVisible ? "block" : "none";
   };
 
   const paginationStyle = {
-    display: "none"
+    display: handleGetVisibility()
   }
 
 
