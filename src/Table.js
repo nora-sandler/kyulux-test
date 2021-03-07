@@ -21,6 +21,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 import * as utils from './utils.js';
 import * as fda from './fda-utils.js';
@@ -64,6 +65,11 @@ function changeSearchTerm(newSearchTerm) {
 
 function parseFDAAdverseEventSearch(adverseEventsResponse) {
   let ourRows = []
+  
+  if(adverseEventsResponse === undefined || 'error' in adverseEventsResponse) {
+    return ourRows
+  }
+
   let results = adverseEventsResponse.results
   for(let iresult = 0; iresult < results.length; iresult++) {
 
@@ -287,7 +293,7 @@ const getUseStyles = (onGetVisibility) => { return makeStyles((theme) => ({
 
 export default function EnhancedTable() {
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = useStateWithCallbackLazy([]);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selected, setSelected] = React.useState([]);
@@ -296,12 +302,15 @@ export default function EnhancedTable() {
   const [isVisible, setIsVisible] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  //TODO: Kind of a hack but it works to update right away.
+  let rows2 = [];
+
   const handleFetchData = (event, enteredSearchTerm) => {
     fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=10`).then(response => response.json())
             .then(data => {
               setSearchTerm(enteredSearchTerm);
-              setRows(parseFDAAdverseEventSearch(data));
-              setIsVisible(true);
+              setRows( rows2 = parseFDAAdverseEventSearch(data), () => {setIsVisible(rows2.length > 0 ? true : false);} );
+              
             }).catch((error) => { errorReport(error) });
   }
   const handleChangeSearchTerm = (event, enteredSearchTerm) => {
