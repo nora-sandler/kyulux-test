@@ -15,21 +15,22 @@ The API endpoint used here outputs quite a lot of information. This information 
 #### Current Limitations
 * The search method is limited to searching by reactions only.
 * The search is limited to 10 results
- * The best way to improve this is to make several API calls:
-   1. first call an endpoint that returns the number of hits for a query. Use this information to fill the pagination data (despite not having all the table data yet).
-   2. Make a query to get the first couple pages or so of the table.
-   3. Make a query to get the rest of the table silently in the background. 
+  * The best way to improve this is to make several API calls:
+    1. first call an endpoint that returns the number of hits for a query. Use this information to fill the pagination data (despite not having all the table data yet).
+    2. Make a query to get the first couple pages or so of the table.
+    3. Make a query to get the rest of the table silently in the background. 
 * The columns for *Drugs* and *Reactions* often produce ugly long lists.
- * This is best solved by only listing one reaction (the one that was searched) and making the row expandable to reveal a sub-table that shows the drugs as well as information on the dosage and perscription period (not currently shown) and the a list of the other reactions.
+  * This is best solved by only listing one reaction (the one that was searched) and making the row expandable to reveal a sub-table that shows the drugs as well as information on the dosage and perscription period (not currently shown) and the a list of the other reactions.
 
 ### Technical Details
 * React (hook-based) was used.
- * Material-UI tables were used. They're MIT licensed so it's fine.
- * Installation instructions:
-   Need to have node.js installed in your environment (known to work with 13.12).
-   ```
-    git clone https://github.com/nora-sandler/kyulux-test && cd kyulux-test
-    npm install
-    npm start
-   ```
-   In a browser, type localhost:3000/Table in the address bar.
+  * Material-UI tables were used. They're MIT licensed so it's fine.
+  * Installation instructions:
+    * Need to have node.js installed in your environment (known to work with 13.12).
+    * Run the following commands:
+      ```
+      git clone https://github.com/nora-sandler/kyulux-test && cd kyulux-test
+      npm install
+      npm start
+      ```
+    * In a browser, type localhost:3000/Table in the address bar.
