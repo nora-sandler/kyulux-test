@@ -222,7 +222,6 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected, onSearch, onChangeSearchTerm, getVisibility } = props;
-  let searchTermLocal = ""
 
   const searchLabelStyle = {
     width: "7%",
@@ -242,17 +241,13 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       }
 
-        <form onSubmit={(e) => {e.preventDefault(); onSearch(e, searchTermLocal)} } >
+        <form onSubmit={(e) => {e.preventDefault(); onSearch(e, document.getElementById("searchTerm").value)} } >
           Search: <input
             type="text"
             style={searchInputStyle}
             id="searchTerm"
             name="searchTerm"
             placeholder="Enter Adverse Reaction"
-            onChange={(e) => {
-              onChangeSearchTerm(e.target.value);
-              searchTermLocal = e.target.value
-            }}
             required
           />
         </form>
