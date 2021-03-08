@@ -17,7 +17,7 @@ The API endpoint used here outputs quite a lot of information. This information 
 * The search is limited to 10 results
   * These openFDA APIs actually allow making queries in a paged manner described [here](https://open.fda.gov/apis/paging).
     * A query with a limit of one can be made just to get the total hit count and fill the pagination information accordingly.
-    * When clicking through pages, another query can be made by carefully adjusting the *skip* and *limit* parameter.
+    * When clicking through pages, another query can be made by carefully adjusting the *skip* and *limit* parameters to reflect the page number and page size, respectively.
     * Sorting the columns would result in another query by specifying the *sort* parameter to the needed column and indicate whether it's ascending or descending.
 * The columns for *Drugs* and *Reactions* often produce ugly long lists.
   * This is best solved by only listing one reaction (the one that was searched) and making the row expandable to reveal a sub-table that shows the drugs as well as information on the dosage and perscription period (not currently shown) and the a list of the other reactions.
