@@ -19,8 +19,8 @@ import * as utils from './utils.js';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(indexid, reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported) {
-  return { indexid, reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported } };
+function createData(indexid, reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported, gender) {
+  return { indexid, reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported}, gender};
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -105,9 +105,34 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
       strDrugs += drugsSorted[idrugs] + (idrugs < drugsSorted.length - 1 ? ", " : "")
     }
 
-    // Get age
+    // Get  age
     let age = fda.getPatientAgeInYears( results[iresult].patient.patientonsetage,
                                        results[iresult].patient.patientonsetageunit )
+
+// Get gender
+
+let gender = ""
+let patient = results[iresult].patient.patientsex
+console.log(patient, "fem")
+    
+      if (patient === "1"){
+         gender = "Male"
+      }
+      else {
+         gender ="Female"
+      }
+      // symptoms.push(reactions[ireaction].reactionmeddrapt)
+      // console.log(symptoms[0])
+      
+      
+    
+      
+
+    // strSymptoms += reactions[reactions.length-1].reactionmeddrapt
+    // console.log(strSymptoms)
+
+
+
 
 
     // Get country
@@ -122,7 +147,7 @@ function parseFDAAdverseEventSearch(adverseEventsResponse) {
     }
     let countryName = countryCodes[countryCode]
  
-    let curRow = createData(ourRows.length, strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported)
+    let curRow = createData(ourRows.length, strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported, gender)
     ourRows.push(curRow)
   }
 
@@ -142,6 +167,8 @@ const headCells = [
   { id: 'drugs', disablePadding: false, label: 'Drugs' }, // drug[].openfda.generic_name[]
   { id: 'age', disablePadding: false, label: 'Age' }, // patientonsetage
   { id: 'countryName', disablePadding: false, label: 'Country of Occurence' }, // occurcountry
+  { id: 'gender',  disablePadding: true, label: 'Patient gender' }, // patient gender
+
 ];
 
 function EnhancedTableHead(props) {
@@ -379,6 +406,9 @@ export default function EnhancedTable() {
                   const rowStyleCountry = {
                     width: "10%"
                   }
+                  const rowStyleGender = {
+                    width: "5%"
+                  }
 
 
                   return (
@@ -401,6 +431,7 @@ export default function EnhancedTable() {
                       <TableCell style={rowStyleDrugs} align="left">{row.drugs}</TableCell>
                       <TableCell style={rowStyleAge} align="left">{row.age}</TableCell>
                       <TableCell style={rowStyleCountry} align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
+                      <TableCell style={rowStyleGender} align="left">{row.gender}</TableCell>
                     </TableRow>
                   );
                 })}
