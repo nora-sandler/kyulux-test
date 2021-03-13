@@ -19,8 +19,8 @@ import * as utils from './utils.js';
 import * as fda from './fda-utils.js';
 import { countryCodes } from './iso-3166-alpha-2.js';
 
-function createData(indexid, reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported, gender) {
-  return { indexid, reaction, date, drugs, age, countryName, country: {countryCode, countryIsOnlyReported}, gender};
+function createData(indexid, reaction, date, drugs, age, countryCode, countryName, countryIsOnlyReported, gender, strSerious) {
+  return { indexid, reaction, date, drugs, age, countryName, country: { countryCode, countryIsOnlyReported }, gender, strSerious };
 }
 
 function descendingComparator(a, b, orderBy) {
@@ -50,95 +50,109 @@ function stableSort(array, comparator) {
 }
 
 
+let total = 0;
+
 function parseFDAAdverseEventSearch(adverseEventsResponse) {
   let ourRows = []
-  
-  if(adverseEventsResponse === undefined || 'error' in adverseEventsResponse) {
+
+  if (adverseEventsResponse === undefined || 'error' in adverseEventsResponse) {
     return ourRows
   }
 
+  total = adverseEventsResponse.meta.results.total;
+    console.log(total)
+    
   let results = adverseEventsResponse.results
-  for(let iresult = 0; iresult < results.length; iresult++) {
+  for (let iresult = 0; iresult < results.length; iresult++) {
 
-
+    
     // Get reactions.
     // let symptoms = []
     let strSymptoms = ""
 
     let reactions = results[iresult].patient.reaction
-    for(let ireaction = 0; ireaction < reactions.length-1; ireaction++) {
+    for (let ireaction = 0; ireaction < reactions.length - 1; ireaction++) {
       // symptoms.push(reactions[ireaction].reactionmeddrapt)
       strSymptoms += reactions[ireaction].reactionmeddrapt + ", "
-      
+
     }
-    strSymptoms += reactions[reactions.length-1].reactionmeddrapt
+    strSymptoms += reactions[reactions.length - 1].reactionmeddrapt
 
     // Get date 
     let dateAsRead = results[iresult].receiptdate
-    let dateStr = dateAsRead.substr(0,4) + '/' + dateAsRead.substr(4,2) + '/' + dateAsRead.substr(6,2)
+    let dateStr = dateAsRead.substr(0, 4) + '/' + dateAsRead.substr(4, 2) + '/' + dateAsRead.substr(6, 2)
     let date = new Date(0)
-    date.setUTCSeconds(Date.parse( dateStr ) / 1000)
+    date.setUTCSeconds(Date.parse(dateStr) / 1000)
 
 
     // Get drugs
 
     let drugs = results[iresult].patient.drug
-    let drugsSorted = [] 
+    let drugsSorted = []
 
-    for(let idrugs = 0; idrugs < drugs.length; idrugs++) {
+    for (let idrugs = 0; idrugs < drugs.length; idrugs++) {
 
       let strCurDrug = drugs[idrugs].medicinalproduct
 
       let strCurDrugLowered = strCurDrug[0]
-      for(let iCurDrug = 1; iCurDrug < strCurDrug.length; iCurDrug++)
-      {
-        strCurDrugLowered += strCurDrug[iCurDrug].toLowerCase() 
+      for (let iCurDrug = 1; iCurDrug < strCurDrug.length; iCurDrug++) {
+        strCurDrugLowered += strCurDrug[iCurDrug].toLowerCase()
       }
-     
+
       drugsSorted.push(strCurDrugLowered)
     }
 
     drugsSorted = utils.sort_unique(drugsSorted)
 
     let strDrugs = ""
-    for(let idrugs = 0; idrugs < drugsSorted.length; idrugs++) {
+    for (let idrugs = 0; idrugs < drugsSorted.length; idrugs++) {
       strDrugs += drugsSorted[idrugs] + (idrugs < drugsSorted.length - 1 ? ", " : "")
     }
 
     // Get  age
-    let age = fda.getPatientAgeInYears( results[iresult].patient.patientonsetage,
-                                       results[iresult].patient.patientonsetageunit )
+    let age = fda.getPatientAgeInYears(results[iresult].patient.patientonsetage,
+      results[iresult].patient.patientonsetageunit)
 
-// Get gender
+    // Get gender
 
-let gender = ""
-let patient = results[iresult].patient.patientsex
-console.log(patient, "fem")
-    
-      if (patient === "1"){
-         gender = "Male"
-      }
-      else {
-         gender ="Female"
-      }
-      // symptoms.push(reactions[ireaction].reactionmeddrapt)
-      // console.log(symptoms[0])
-      
-      
-    
-      
+    let gender = ""
+    let patient = results[iresult].patient.patientsex
+    //console.log(patient, "fem")
+
+    if (patient === "1") {
+      gender = "Male"
+    }
+    else {
+      gender = "Female"
+    }
+    // symptoms.push(reactions[ireaction].reactionmeddrapt)
+    // console.log(symptoms[0])
+
+
+
+
 
     // strSymptoms += reactions[reactions.length-1].reactionmeddrapt
     // console.log(strSymptoms)
 
-
+    // Serious
+    let newSerious = results[iresult].serious
+    console.log("disabling", newSerious)
+    let strSerious = ""
+    if (newSerious === "1") {
+      strSerious = "Yes"
+    }
+    
+    else {
+      strSerious = "No"
+    }
 
 
 
     // Get country
     let countryCode = ""
     let countryIsOnlyReported = false;
-    if( "occurcountry" in results[iresult] ) {
+    if ("occurcountry" in results[iresult]) {
       countryCode = results[iresult].occurcountry
     }
     else {
@@ -146,18 +160,21 @@ console.log(patient, "fem")
       countryCode = results[iresult].primarysource.reportercountry
     }
     let countryName = countryCodes[countryCode]
- 
-    let curRow = createData(ourRows.length, strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported, gender)
+
+    let curRow = createData(ourRows.length, strSymptoms, date, strDrugs, age, countryCode, countryName, countryIsOnlyReported, gender, strSerious)
     ourRows.push(curRow)
   }
 
   return ourRows
 }
 
-function errorReport(error)
-{
+function errorReport(error) {
   console.log("error")
 }
+
+
+
+
 
 
 
@@ -167,7 +184,8 @@ const headCells = [
   { id: 'drugs', disablePadding: false, label: 'Drugs' }, // drug[].openfda.generic_name[]
   { id: 'age', disablePadding: false, label: 'Age' }, // patientonsetage
   { id: 'countryName', disablePadding: false, label: 'Country of Occurence' }, // occurcountry
-  { id: 'gender',  disablePadding: true, label: 'Patient gender' }, // patient gender
+  { id: 'gender', disablePadding: true, label: 'Patient gender' }, // patient gender
+  { id: 'strSerious', disablePadding: false, label: 'Seriousness' }, // Seriousness
 
 ];
 
@@ -181,7 +199,7 @@ function EnhancedTableHead(props) {
     <TableHead>
       <TableRow>
         <TableCell padding="checkbox">
-          
+
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
@@ -225,13 +243,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
 }));
 
 const EnhancedTableToolbar = (props) => {
@@ -252,45 +270,47 @@ const EnhancedTableToolbar = (props) => {
     <Toolbar
       className={clsx(classes.root)}
     >
-        <form style={formInputStyle} onSubmit={(e) => {e.preventDefault(); onSearch(e, document.getElementById("searchTerm").value)} } >
-          Search: <input
-            type="text"
-            style={searchInputStyle}
-            id="searchTerm"
-            name="searchTerm"
-            placeholder="Enter Adverse Reaction"
-            required
-          />
-        </form>
+      <form style={formInputStyle} onSubmit={(e) => { e.preventDefault(); onSearch(e, document.getElementById("searchTerm").value) }} >
+        Search: <input
+          type="text"
+          style={searchInputStyle}
+          id="searchTerm"
+          name="searchTerm"
+          placeholder="Enter Adverse Reaction"
+          required
+        />
+      </form>
 
     </Toolbar>
   );
 };
 
-const getUseStyles = (onGetVisibility) => { return makeStyles((theme) => ({
-  root: {
-    width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-    display: onGetVisibility() ? "block" : "none",
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-}));}
+const getUseStyles = (onGetVisibility) => {
+  return makeStyles((theme) => ({
+    root: {
+      width: '100%',
+    },
+    paper: {
+      width: '100%',
+      marginBottom: theme.spacing(2),
+    },
+    table: {
+      minWidth: 750,
+      display: onGetVisibility() ? "block" : "none",
+    },
+    visuallyHidden: {
+      border: 0,
+      clip: 'rect(0 0 0 0)',
+      height: 1,
+      margin: -1,
+      overflow: 'hidden',
+      padding: 0,
+      position: 'absolute',
+      top: 20,
+      width: 1,
+    },
+  }));
+}
 
 export default function EnhancedTable() {
   const [rows, setRows] = useStateWithCallbackLazy([]);
@@ -305,11 +325,12 @@ export default function EnhancedTable() {
   let rows2 = [];
 
   const handleFetchData = (event, enteredSearchTerm) => {
-    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=10`).then(response => response.json())
-            .then(data => {
-              setRows( rows2 = parseFDAAdverseEventSearch(data), () => {setIsVisible(rows2.length > 0 ? true : false);} );
-              
-            }).catch((error) => { errorReport(error) });
+    fetch(`https://api.fda.gov/drug/event.json?search=patient.reaction.reactionmeddrapt:%22${enteredSearchTerm}%22&limit=10`)
+    .then(response => response.json())
+      .then(data => {
+        setRows(rows2 = parseFDAAdverseEventSearch(data), () => { setIsVisible(rows2.length > 0 ? true : false); });
+
+      }).catch((error) => { errorReport(error) });
   }
 
   const handleRequestSort = (event, property) => {
@@ -390,7 +411,7 @@ export default function EnhancedTable() {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   console.log(`We are on page ${page}: row ${index} Hee Hee`)
- 
+
                   const rowStyleReactions = {
                     width: "45%"
                   }
@@ -409,6 +430,9 @@ export default function EnhancedTable() {
                   const rowStyleGender = {
                     width: "5%"
                   }
+                  const rowStyleSeriousness = {
+                    width: "10%"
+                  }
 
 
                   return (
@@ -422,7 +446,7 @@ export default function EnhancedTable() {
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
-                        
+
                       </TableCell>
                       <TableCell style={rowStyleReactions} component="th" id={labelId} scope="row" padding="none">
                         {row.reaction}
@@ -432,6 +456,7 @@ export default function EnhancedTable() {
                       <TableCell style={rowStyleAge} align="left">{row.age}</TableCell>
                       <TableCell style={rowStyleCountry} align="left">{row.countryName + (row.country.countryIsOnlyReported ? ' (reported by)' : '')}</TableCell>
                       <TableCell style={rowStyleGender} align="left">{row.gender}</TableCell>
+                      <TableCell style={rowStyleSeriousness} align="left">{row.strSerious}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -447,7 +472,7 @@ export default function EnhancedTable() {
           rowsPerPageOptions={[5, 10, 25]}
           style={paginationStyle}
           component="div"
-          count={rows.length}
+          count={total}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
